@@ -24,7 +24,7 @@ int main(void)
 			PORTB = 0x01;//writing to registers
 		}
 		else{
-			PORTB = 0x01;
+			PORTB = 0x00;
 		}
 	}
 	return 0;
