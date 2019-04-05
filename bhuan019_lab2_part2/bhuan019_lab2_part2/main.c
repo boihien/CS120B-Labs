@@ -26,8 +26,23 @@ int main(void)
 		space1 = PINA & 0x02;
 		space2 = PINA & 0x04;
 		space3 = PINA & 0x08;
+		if(space0 == 0x00){
+			cntavail = (cntavail) + 0x01;
+		}
+		if(space1 == 0x00){
+			cntavail = (cntavail) + 0x01;
+		}
+		if(space2 == 0x00){
+			cntavail = (cntavail) + 0x01;
+		}
+		if(space3 == 0x00){
+			cntavail = (cntavail) + 0x01;
+		}
 		
-		if(
+		
+		
+		PORTC = cntavail;
+		
     }
 }
 

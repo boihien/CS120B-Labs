@@ -15,6 +15,7 @@ int main(void)
 	
 	unsigned char input1 = 0x00;
 	unsigned char input2 = 0x00;
+
 	
 	while(1){
 		//read input
