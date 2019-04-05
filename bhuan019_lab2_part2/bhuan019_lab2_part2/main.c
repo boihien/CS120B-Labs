@@ -21,6 +21,7 @@ int main(void)
 	unsigned char cntavail = 0x00;
     while (1) 
     {
+		cntavail = 0x00;
 		//read in input
 		space0 = PINA & 0x01;
 		space1 = PINA & 0x02;
@@ -39,10 +40,9 @@ int main(void)
 			cntavail = (cntavail) + 0x01;
 		}
 		
-		
-		
 		PORTC = cntavail;
 		
     }
+	return 0;
 }
 
