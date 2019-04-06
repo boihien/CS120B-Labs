@@ -39,7 +39,7 @@ int main(void)
 		if(space3 == 0x00){
 			cntavail = (cntavail) + 0x01;
 		}
-		
+	
 		PORTC = cntavail;
 		
     }
