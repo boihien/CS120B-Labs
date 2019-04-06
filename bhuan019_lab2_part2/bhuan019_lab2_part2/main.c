@@ -21,28 +21,16 @@ int main(void)
 	unsigned char cntavail = 0x00;
     while (1) 
     {
-		cntavail = 0x00;
 		//read in input
 		space0 = PINA & 0x01;
 		space1 = PINA & 0x02;
 		space2 = PINA & 0x04;
 		space3 = PINA & 0x08;
-		if(space0 == 0x00){
-			cntavail = (cntavail) + 0x01;
-		}
-		if(space1 == 0x00){
-			cntavail = (cntavail) + 0x01;
-		}
-		if(space2 == 0x00){
-			cntavail = (cntavail) + 0x01;
-		}
-		if(space3 == 0x00){
-			cntavail = (cntavail) + 0x01;
-		}
-	
-		PORTC = cntavail;
 		
-    }
+		cntavail = !(space0 & 0x01) + !((space1 & 0x02) >> 1) + !((space2 & 0x04) >> 2) + !((space3 & 0x08) >> 3);
+		
+		PORTC = cntavail;
+	}
 	return 0;
 }
 
