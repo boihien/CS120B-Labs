@@ -12,23 +12,21 @@
 int main(void)
 {
 	DDRA = 0x00; PORTA = 0xFF;
-	DDRB = 0xFF; PORTB = 0x00;
-	DDRC = 0xFF; PORTC = 0x00;
-    
-	unsigned char numB;
-	unsigned char numA;
-	unsigned char numC;
-    while (1) 
-    {
-		numA = PINA;
-		
-		numB = (numA & 0xF0) >> 4;
-		
-		numC = (numA & 0x0F) << 4;
-		
-		PORTB = numB;
-		PORTC = numC;
-		
-    }
+	DDRB = 0x0F; PORTB = 0xF0;
+	DDRC = 0xF0; PORTC = 0x0F;
+	unsigned char PA = 0x00;
+	unsigned char topPA = 0x00;
+	unsigned char botPA = 0x00;
+	/* Replace with your application code */
+	while (1)
+	{
+		PA = PINA & 0xFF;
+
+		topPA = (PA & 0xF0) >> 4;
+		botPA = (PA & 0x0F) << 4;
+
+		PORTB = topPA;
+		PORTC = botPA;
+	}
 }
 

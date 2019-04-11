@@ -3,78 +3,72 @@
  *
  * Created: 10-Apr-19 15:56:13
  * Author : Boi-Hien Huang
+ * Partner: Tommy Ngo
  */ 
 
 #include <avr/io.h>
 
 
+unsigned char SetBit(unsigned char x, unsigned char k, unsigned char b) {
+	return (b ? x | (0x01 << k) : x & ~(0x01 << k));
+}
+unsigned char GetBit(unsigned char x, unsigned char k) {
+	return ((x & (0x01 << k)) != 0);
+}
+
+
 int main(void)
 {
-	DDRA = 0x00; PORTA = 0xFF; //Configure port A's 8 pins as input
-	DDRC = 0xFF; PORTC = 0x00; //Configure port B's 8 pin as output
-	
-	unsigned char fuelLevel = 0x00;
-	unsigned char sensor = 0x00;
-	unsigned char key = 0x00;
-	unsigned char seated = 0x00;
-	unsigned char seatBelt = 0x00;
-	
-	while(1){
-		fuelLevel = PINA;
-		if((fuelLevel & 0x01) == 0x01){
-			sensor = 0x60;
+	DDRA = 0x00; PORTA = 0xFF;
+	DDRC = 0xFF; PORTC = 0x00;
+	unsigned char levelA = 0x00;
+	unsigned char levelC = 0x00;
+	unsigned char lowFuel = 0x00;
+	unsigned char seat = 0x00;
+	unsigned char fasten = 0x00;
+	/* Replace with your application code */
+	while (1)
+	{
+		levelA = PINA & 0x0F;
+		seat = PINA & 0x70;
+		if (levelA == 0x00) {
+			levelC = 0x00;
+			lowFuel = 0x40;
 		}
-		if((fuelLevel & 0x02) == 0x02){
-			sensor = 0x60;
+		else if (levelA <= 0x02) {
+			levelC = 0x20;
+			lowFuel = 0x40;
 		}
-		if((fuelLevel & 0x03) == 0x03){
-			sensor = 0x70;
+		else if (levelA <= 0x04) {
+			levelC = 0x30;
+			lowFuel = 0x40;
 		}
-		if((fuelLevel & 0x04) == 0x04){
-			sensor = 0x70;
+		else if (levelA <= 0x06) {
+			levelC = 0x38;
+			lowFuel = 0x00;
 		}
-		if((fuelLevel & 0x05) == 0x05){
-			sensor = 0x38;
+		else if (levelA <= 0x09) {
+			levelC = 0x3C;
+			lowFuel = 0x00;
 		}
-		if((fuelLevel & 0x06) == 0x06){
-			sensor = 0x38;
+		else if (levelA <= 0x0C) {
+			levelC = 0x3E;
+			lowFuel = 0x00;
 		}
-		if((fuelLevel & 0x07) == 0x07){
-			sensor = 0x3C;
+		else if (levelA <= 0x0F) {
+			levelC = 0x3F;
+			lowFuel = 0x00;
 		}
-		if((fuelLevel & 0x08) == 0x08){
-			sensor = 0x3C;
+
+		if (GetBit(seat, 4) && GetBit(seat, 5) && !GetBit(seat,6)) {
+			fasten = SetBit(fasten, 7, 1);
 		}
-		if((fuelLevel & 0x09) == 0x09){
-			sensor = 0x3C;
+		else {
+			fasten = SetBit(fasten, 7, 0);
 		}
-		if((fuelLevel & 0x0A) == 0x0A){
-			sensor = 0x3E;
-		}
-		if((fuelLevel & 0x0B) == 0x0B){
-			sensor = 0x3E;
-		}
-		if((fuelLevel & 0x0C) == 0x0C){
-			sensor = 0x3E;
-		}
-		if((fuelLevel & 0x0D) == 0x0D){
-			sensor = 0x3F;
-		}
-		if((fuelLevel & 0x0E) == 0x0E){
-			sensor = 0x3F;
-		}
-		if((fuelLevel & 0x0F) == 0x0F){
-			sensor = 0x3F;
-		}
-		key = PINA & 0x10;
-		seated = PINA & 0x20;
-		seatBelt = PINA & 0x40;
-		if((key == 0x10) && (seated == 0x20) && (seatBelt == 0x00)){
-			PORTC = sensor | 0x80;
-		}
-		else{
-			PORTC = sensor;
-		}
+
+		PORTC = levelC | lowFuel | fasten;
+
 	}
 }
 
