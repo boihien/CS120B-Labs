@@ -69,7 +69,7 @@ int main(void)
 		key = PINA & 0x10;
 		seated = PINA & 0x20;
 		seatBelt = PINA & 0x40;
-		if((key = 0x10) && (seated = 0x20) && (seatBelt = 0x00)){
+		if((key == 0x10) && (seated == 0x20) && (seatBelt == 0x00)){
 			PORTC = sensor | 0x80;
 		}
 		else{
