@@ -39,8 +39,11 @@ void tick() {
 				state = inc;
 				break;
 			}
-			if((PINA & 0x02) == 0x01){
+			else if((PINA & 0x02) == 0x01){
 				state = reset;
+				break;
+			}
+			else{
 				break;
 			}
 			
@@ -53,8 +56,11 @@ void tick() {
 				state = dec;
 				break;
 			}
-			if((PINA & 0x01) == 0x01){
+			else if((PINA & 0x01) == 0x01){
 				state = reset;
+				break;
+			}
+			else{
 				break;
 			}
 			
@@ -81,10 +87,18 @@ void tick() {
 				PORTC = PORTC + 0x01;
 				break;
 			}
+			else{
+				PORTC = 0x09;
+				break;
+			}
 		
 		case dec:
 			if(PORTC > 0x00){
 				PORTC = PORTC - 0x01;
+				break;
+			}
+			else{
+				PORTC = 0x00;
 				break;
 			}
 			
