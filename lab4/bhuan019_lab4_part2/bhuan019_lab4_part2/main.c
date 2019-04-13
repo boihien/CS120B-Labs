@@ -13,115 +13,94 @@ enum States {start, init, inc, dec, wait_inc, wait_dec, reset} state;
 void tick() {
 	switch (state) { // Transitions
 		case init:
-			state = start;
-			break;
+		if (PINA & 0x01) {
+			state = wait_inc;
+		}
+		else if (PINA & 0x02) {
+			state = wait_dec;
+		}
+		break;
 		
 		case start:
-			if((PINA & 0x01) == 0x01){
-				state = wait_inc;
-				break;
-			}
-			else{
-				state = start;
-				break;
-			}
-			if((PINA & 0x02) == 0x01){
-				state = wait_dec;
-				break;
-			}
-			else{
-				state = start;
-				break;
-			}
+		if (PINA & 0x01) {
+			state = wait_inc;
+		}
+		else if (PINA & 0x02) {
+			state = wait_dec;
+		}
+		break;
 		
 		case wait_inc:
-			if((PINA & 0x01) == 0x00){
-				state = inc;
-				break;
-			}
-			else if((PINA & 0x02) == 0x01){
-				state = reset;
-				break;
-			}
-			else{
-				break;
-			}
-			
+		state = inc;
+		break;
+		
 		case inc:
+		if (!(PINA & 0x01)) {
 			state = start;
-			break;
-			
+		}
+		else if (PINA & 0x02) {
+			state = reset;
+		}
+		break;
+		
 		case wait_dec:
-			if((PINA & 0x02) == 0x00){
-				state = dec;
-				break;
-			}
-			else if((PINA & 0x01) == 0x01){
-				state = reset;
-				break;
-			}
-			else{
-				break;
-			}
-			
+		state = dec;
+		break;
+		
 		case dec:
+		if (!(PINA & 0x02)) {
 			state = start;
-			break;
-			
+		}
+		else if (PINA & 0x01) {
+			state = reset;
+		}
+		break;
+		
 		case reset:
+		if (!PINA) {
 			state = start;
-			break;
+		}
+		break;
 
 	} // Transitions
-
 	switch(state) { // Actions
 		case init:
-			PORTC = 0x07;
-			break;
-			
+		PORTC = 0x07;
+		break;
+		
 		case start:
-			break;
+		break;
 		
 		case inc:
-			if(PORTC < 0x09){
-				PORTC = PORTC + 0x01;
-				break;
-			}
-			else{
-				PORTC = 0x09;
-				break;
-			}
+		break;
 		
 		case dec:
-			if(PORTC > 0x00){
-				PORTC = PORTC - 0x01;
-				break;
-			}
-			else{
-				PORTC = 0x00;
-				break;
-			}
-			
+		break;
+		
 		case wait_dec:
-			break;
-			
+		if (PORTC > 0){
+			PORTC = PORTC - 1;
+		}
+		break;
+		
 		case wait_inc:
-			break;
-			
+		if (PORTC < 9){
+			PORTC = PORTC + 1;
+		}
+		break;
+		
 		case reset:
-			PORTC = 0x00;
-			break;
-			
+		PORTC = 0x00;
+		break;
+		
 		default:
-			break;
-		
-		
-	} // Actions
+		break;
+	}
 }
 
 int main(void) {
 	DDRA = 0x00; PORTA = 0xFF;
-	DDRC = 0xFF; PORTC = 0x07;
+	DDRC = 0xFF; PORTC = 0x00;
 	
 	state = init;
 	while(1) { tick(); }
