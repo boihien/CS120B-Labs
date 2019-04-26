@@ -1,7 +1,7 @@
 /*
- * bhuan019_lab6_part1.c
+ * bhuan019_lab6_part2.c
  *
- * Created: 25-Apr-19 16:59:49
+ * Created: 25-Apr-19 17:37:30
  * Author : Boi-Hien Huang
  */ 
 
@@ -63,40 +63,73 @@ void TimerSet(unsigned long M) {
 	_avr_timer_M = M;
 	_avr_timer_cntcurr = _avr_timer_M;
 }
-enum States {start, light1, light2, light3} state;
-unsigned char temp;
+enum States {start, light1, light2, light3, wait, restart} state;
 
 void tick(){
 	switch(state){//transitions
 		case start:
 			state = light1;
 			break;
-			
+		
 		case light1:
-			state = light2;
+			if(PINA & 0x01){
+				state = wait;
+			}
+			else{
+				state = light2;
+			}
 			break;
-			
+		
 		case light2:
-			state = light3;
+			if(PINA & 0x01){
+				state = wait;
+			}
+			else{
+				state = light3;
+			}
 			break;
-			
+		
 		case light3:
-			state = light1;
+			if(PINA& 0x01){
+				state = wait;
+			}
+			else{
+				state = restart;
+			}
 			break;
+		case wait:
+			if(PINA & 0x01){
+				state = wait;
+			}
+			else{
+				state = restart;
+			}
+			break;
+		case restart:
+			if(PINA & 0x01){
+				state = light1;
+			}
+			else{
+				state = restart;
+			}
 	}
 	switch (state){//actions
 		case start:
 			break;
 		case light1:
-			temp = 0x01;
+			PORTB = 0x01;
 			break;
 		case light2:
-			temp = 0x02;
+			PORTB = 0x02;
 			break;
 		case light3:
-			temp = 0x04;
+			PORTB = 0x04;
 			break;
-			
+		case wait:
+			break;
+		case restart:
+			break;
+		
 	}
 }
 int main (void)
@@ -104,20 +137,17 @@ int main (void)
 	state = start;
 	DDRB = 0xFF; // Set port B to output
 	PORTB = 0x00; // Init port B to 0s
-	TimerSet(250);
+	TimerSet(500);
 	TimerOn();
 	//unsigned char tmpB = 0x00;
 	while(1) {
-		
 		tick();
 		// User code (i.e. synchSM calls)
 		//tmpB = ~tmpB;	// Toggle PORTB; Temporary, bad programming style
 		//PORTB = tmpB;
-		PORTB = temp;
 		while (!TimerFlag);	// Wait 1 sec
 		TimerFlag = 0;
 		// Note: For the above a better style would use a synchSM with TickSM()
 		// This example just illustrates the use of the ISR and flag
 	}
 }
-
