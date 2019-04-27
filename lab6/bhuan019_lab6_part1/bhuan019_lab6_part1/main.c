@@ -104,7 +104,7 @@ int main (void)
 	state = start;
 	DDRB = 0xFF; // Set port B to output
 	PORTB = 0x00; // Init port B to 0s
-	TimerSet(250);
+	TimerSet(125);
 	TimerOn();
 	//unsigned char tmpB = 0x00;
 	while(1) {
