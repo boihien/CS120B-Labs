@@ -3,7 +3,7 @@
  *
  * Created: 25-Apr-19 19:40:38
  * Author : Boi-Hien Huang
- */ 
+ */
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "io.c"
@@ -118,45 +118,45 @@ void tick(){
 		
 		default:
 		break;
-			
-			
+		
+		
 	}
 	switch (state){
 		case start:
-			LCD_Cursor(1);
-			LCD_WriteData('0');
-			break;
+		LCD_Cursor(1);
+		LCD_WriteData('0');
+		break;
 		case init:
-			break;
+		break;
 		case inc:
-			break;
+		break;
 		case dec:
-			break;
+		break;
 		case wait_dec:
-			if(counter <= 0){
-				counter = 0;
-			}
-			else{
-				counter--;
-			}
-			LCD_Cursor(1);
-			LCD_WriteData(counter + '0');
-			break;
-		case wait_inc:
-			if(counter >= 9){
-				counter = 9;
-			}
-			else{
-				counter++;
-			}
-			LCD_Cursor(1);
-			LCD_WriteData(counter + '0');
-			break;
-		case reset:
+		if(counter <= 0){
 			counter = 0;
-			LCD_Cursor(1);
-			LCD_WriteData(counter + '0');
-			break;
+		}
+		else{
+			counter--;
+		}
+		LCD_Cursor(1);
+		LCD_WriteData(counter + '0');
+		break;
+		case wait_inc:
+		if(counter >= 9){
+			counter = 9;
+		}
+		else{
+			counter++;
+		}
+		LCD_Cursor(1);
+		LCD_WriteData(counter + '0');
+		break;
+		case reset:
+		counter = 0;
+		LCD_Cursor(1);
+		LCD_WriteData(counter + '0');
+		break;
 	}
 }
 int main(void){
