@@ -34,7 +34,7 @@ void set_PWM(double frequency) {
 void PWM_on() {
 	TCCR0A = (1 << COM0A0);
 	// COM3A0: Toggle PB3 on compare match between counter and OCR0A
-	TCCR0B = (1 << WGM02) | (1 << CS01) | (1 << CS00);
+	TCCR0B = (1 << WGM02) | (1 << CS01) | (1 << CS30);
 	// WGM02: When counter (TCNT0) matches OCR0A, reset counter
 	// CS01 & CS30: Set a prescaler of 64
 	set_PWM(0);
@@ -53,10 +53,10 @@ void tick(){
 			break;
 		case start:
 			if(!(~PINA & 0x07)){
-				state = on;
+				state = off;
 			}
 			else{
-				state = start;
+				state = on;
 			}
 			break;
 		case on:
@@ -88,9 +88,10 @@ void tick(){
 		case init:
 			break;
 		case start:
-			PWM_on();
+			set_PWM(0);
 			break;
 		case on:
+			PORTB = 0x02;
 			if(~PINA & 0x01){
 				set_PWM(261.63);
 			}
@@ -102,14 +103,16 @@ void tick(){
 			}
 			break;
 		case off:
-		PORTB = 0x01;
+			PORTB = 0x01;
 			set_PWM(0);
+			break;
 	}
 }
 int main(void){
 	DDRA = 0x00; PORTA = 0xFF;
 	DDRB = 0xFF; PORTB = 0x00;
 	state = init;
+	PWM_on();
 	while(1){
 		tick();
 	}
