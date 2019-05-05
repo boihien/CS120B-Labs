@@ -24,7 +24,7 @@ void set_PWM(double frequency) {
 		else if (frequency > 31250) { OCR0A = 0x0000; }
 		
 		// set OCR3A based on desired frequency
-		else { OCR3A = (short)(8000000 / (128 * frequency)) - 1; }
+		else { OCR0A = (short)(8000000 / (128 * frequency)) - 1; }
 
 		TCNT0 = 0; // resets counter
 		current_frequency = frequency; // Updates the current frequency
@@ -32,9 +32,9 @@ void set_PWM(double frequency) {
 }
 
 void PWM_on() {
-	TCCR0A = (1 << COM0A0);
+	TCCR0A = (1 << COM0A0 | 1 << WGM00);
 	// COM3A0: Toggle PB3 on compare match between counter and OCR0A
-	TCCR0B = (1 << WGM02) | (1 << CS01) | (1 << CS30);
+	TCCR0B = (1 << WGM02) | (1 << CS01) | (1 << CS00);
 	// WGM02: When counter (TCNT0) matches OCR0A, reset counter
 	// CS01 & CS30: Set a prescaler of 64
 	set_PWM(0);
@@ -45,73 +45,73 @@ void PWM_off() {
 	TCCR0B = 0x00;
 }
 
-enum States{init, start, on, off} state;
+
+enum States{off, button1, button2, button3} state;
 void tick(){
+	unsigned char temp = ~PINA & 0x07;
 	switch(state){//transitions
-		case init:
-			state = start;
-			break;
-		case start:
-			if(!(~PINA & 0x07)){
-				state = off;
+		case off:
+			if(temp == 0x01){
+				state = button1;
+			}
+			else if(temp == 0x02){
+				state = button2;
+			}
+			else if(temp == 0x04){
+				state = button3;
 			}
 			else{
-				state = on;
-			}
-			break;
-		case on:
-			if(~PINA & 0x01){
-				state = on;
-			}
-			else if(!(~PINA & 0x01)){
-				state = off;
-			}
-			else if (~PINA & 0x02){
-				state = on;
-			}
-			else if(!(~PINA & 0x02)){
-				state = off;
-			}
-			else if (~PINA & 0x03){
-				state = on;
-			}
-			else if(!(~PINA & 0x03)){
 				state = off;
 			}
 			break;
-		case off:
-			state = start;
+		case button1:
+			if(temp == 0x01){
+				state = button1;
+			}
+			else{
+				state = off;
+			}
 			break;
-			
+		case button2:
+			if(temp == 0x02){
+				state = button2;
+			}
+			else{
+				state = off;
+			}
+			break;
+		case button3:
+			if(temp == 0x04){
+				state = button3;
+			}
+			else{
+				state = off;
+			}
+			break;
 	}
 	switch(state){//actions
-		case init:
-			break;
-		case start:
-			set_PWM(0);
-			break;
-		case on:
-			PORTB = 0x02;
-			if(~PINA & 0x01){
-				set_PWM(261.63);
-			}
-			else if(~PINA & 0x02){
-				set_PWM(293.66);
-			}
-			else if(~PINA & 0x03){
-				set_PWM(329.63);
-			}
-			break;
 		case off:
 			PORTB = 0x01;
 			set_PWM(0);
+			break;
+		case button1:
+			PORTB = 0x02;
+			set_PWM(261.63);
+			break;
+		case button2:
+			PORTB = 0x03;
+			set_PWM(293.66);
+			break;
+		case button3:
+		PORTB = 0x04;
+			set_PWM(329.63);
 			break;
 	}
 }
 int main(void){
 	DDRA = 0x00; PORTA = 0xFF;
 	DDRB = 0xFF; PORTB = 0x00;
-	state = init;
+	state = off;
 	PWM_on();
 	while(1){
 		tick();
