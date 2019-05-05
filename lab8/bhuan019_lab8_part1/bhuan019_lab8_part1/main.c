@@ -4,7 +4,6 @@
  * Created: 02-May-19 16:25:47
  * Author : Boi-Hien Huang
  */ 
-
 #include <avr/io.h>
 
 void ADC_init() {
@@ -22,12 +21,11 @@ int main(void)
 	DDRB = 0xFF; PORTB = 0x00;
 	DDRD = 0xFF; PORTD = 0x00;
 	void ADC_init();
-    /* Replace with your application code */
-    while (1) 
-    {
+	/* Replace with your application code */
+	while (1)
+	{
 		my_short = ADC;
 		PORTB = (char)my_short;
 		PORTD = (char)(my_short >> 8);
-    }
+	}
 }
-
