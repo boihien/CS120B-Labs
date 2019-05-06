@@ -1,7 +1,7 @@
 /*
- * bhuan019_lab8_part3.c
+ * bhuan019_lab8_part4.c
  *
- * Created: 05-May-19 20:55:24
+ * Created: 05-May-19 22:12:14
  * Author : Boi-Hien Huang
  */ 
 
@@ -16,9 +16,9 @@ void ADC_init() {
 	// whenever the previous conversion completes.
 }
 
-
 unsigned short MAX = 0x050;
-unsigned short temp = 0x00;
+unsigned short ADC_temp = 0x00;
+unsigned short temp = MAX / 8;
 
 int main(void)
 {
@@ -28,13 +28,38 @@ int main(void)
 	
 	while(1)
 	{
-		temp = ADC;
-		if (temp >= MAX/2) {
+		ADC_temp = ADC;
+		if (ADC_temp <= temp)
+		{
 			PORTB = 0x01;
 		}
-		else {
-			PORTB = 0x00;
+		else if (ADC_temp <= temp * 2)
+		{
+			PORTB = 0x03;
+		}
+		else if (ADC_temp <= temp * 3)
+		{
+			PORTB = 0x07;
+		}
+		else if (ADC_temp <= temp * 4)
+		{
+			PORTB = 0x0F;
+		}
+		else if (ADC_temp <= temp * 5)
+		{
+			PORTB = 0x1F;
+		}
+		else if (ADC_temp <= temp * 6)
+		{
+			PORTB = 0x3F;
+		}
+		else if (ADC_temp <= temp * 7)
+		{
+			PORTB = 0x7F;
+		}
+		else
+		{
+			PORTB = 0xFF;
 		}
 	}
 }
-
