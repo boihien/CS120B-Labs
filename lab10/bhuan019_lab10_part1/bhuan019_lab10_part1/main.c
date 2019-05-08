@@ -4,9 +4,12 @@
  * Created: 07-May-19 15:45:52
  * Author : Boi-Hien Huang
  */ 
-
 #include <avr/io.h>
-volatile unsigned char TimerFlag = 0;
+#include <avr/interrupt.h>
+
+volatile unsigned char TimerFlag = 0; // TimerISR() sets this to 1. C programmer should clear to 0.
+
+// Internal variables for mapping AVR's ISR to our cleaner TimerISR model.
 unsigned long _avr_timer_M = 1; // Start count from here, down to 0. Default 1 ms.
 unsigned long _avr_timer_cntcurr = 0; // Current internal count of 1ms ticks
 
@@ -61,24 +64,82 @@ void TimerSet(unsigned long M) {
 }
 
 enum TL_States{tl_start, tl_seq0, tl_seq1, tl_seq2} tl_state;
-enum BL_States{bl_start, bl_seq0, bl_seq2, bl_seq3} bl_state;
+enum BL_States{start, light3, light0} bl_state;
+unsigned char tl_temp = 0x00;
+unsigned char bl_temp = 0x00;
 void TL_tick(){
 	switch(tl_state){//transitions
-		
+		case tl_start:
+			tl_state = tl_seq0;
+			break;
+		case tl_seq0:
+			tl_state = tl_seq1;
+			break;
+		case tl_seq1:
+			tl_state = tl_seq2;
+			break;
+		case tl_seq2:
+			tl_state = tl_seq0;
+			break;
+		default:
+			tl_state = start;
+			break;	
+	}
+	switch(tl_state){//actions
+		case tl_start:
+			break;
+		case tl_seq0:
+			tl_temp = 0x01;
+			break;
+		case tl_seq1:
+			tl_temp = 0x02;
+			break;
+		case tl_seq2:
+			tl_temp = 0x04;
+			break;
+			
 	}
 }
 void BL_tick(){
-	
+	switch(bl_state){//transitions
+		case start:
+			bl_state = light3;
+			break;
+		case light3:
+			bl_state = light0;
+			break;
+		case light0:
+			bl_state = light3;
+			break;
+		default:
+			bl_state = start;
+			break;
+	}
+	switch(bl_state){//actions
+		case start:
+			break;
+		case light3:
+			bl_temp = 0x08;
+			break;
+		case light0:
+			bl_temp = 0x01;
+			break;
+	}
+		
 }
 int main(void)
 {
 	DDRB = 0xFF; PORTB = 0x00;
-	TimerSet(1);
+	TimerSet(125);
 	TimerOn();
-    /* Replace with your application code */
-    while (1){
+	tl_state = tl_start;
+	bl_state = start;
+	/* Replace with your application code */
+	while (1){
+		TL_tick();
+		BL_tick();
 		while(!TimerFlag){
 			TimerFlag = 0;
-    }
+		}
+	}
 }
-
