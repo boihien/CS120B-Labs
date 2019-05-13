@@ -1,9 +1,10 @@
 /*
- * bhuan019_lab10_part1.c
+ * bhuan019_Lab10_Part2.c
  *
- * Created: 07-May-19 15:45:52
+ * Created: 12-May-19 22:04:05
  * Author : Boi-Hien Huang
  */ 
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
@@ -70,60 +71,60 @@ unsigned char bl_temp = 0x00;
 void TL_tick(){
 	switch(tl_state){//transitions
 		case tl_start:
-			tl_state = tl_seq0;
-			break;
+		tl_state = tl_seq0;
+		break;
 		case tl_seq0:
-			tl_state = tl_seq1;
-			break;
+		tl_state = tl_seq1;
+		break;
 		case tl_seq1:
-			tl_state = tl_seq2;
-			break;
+		tl_state = tl_seq2;
+		break;
 		case tl_seq2:
-			tl_state = tl_seq0;
-			break;
+		tl_state = tl_seq0;
+		break;
 		default:
-			tl_state = start;
-			break;
+		tl_state = start;
+		break;
 	}
 	switch(tl_state){//actions
 		case tl_start:
-			break;
+		break;
 		case tl_seq0:
-			tl_temp = 0x01;
-			break;
+		tl_temp = 0x01;
+		break;
 		case tl_seq1:
-			tl_temp = 0x02;
-			break;
+		tl_temp = 0x02;
+		break;
 		case tl_seq2:
-			tl_temp = 0x04;
-			break;
+		tl_temp = 0x04;
+		break;
 		
 	}
 }
 void BL_tick(){
 	switch(bl_state){//transitions
 		case start:
-			bl_state = light3;
-			break;
+		bl_state = light3;
+		break;
 		case light3:
-			bl_state = light0;
-			break;
+		bl_state = light0;
+		break;
 		case light0:
-			bl_state = light3;
-			break;
+		bl_state = light3;
+		break;
 		default:
-			bl_state = start;
-			break;
+		bl_state = start;
+		break;
 	}
 	switch(bl_state){//actions
 		case start:
-			break;
+		break;
 		case light3:
-			bl_temp = 0x08;
-			break;
+		bl_temp = 0x08;
+		break;
 		case light0:
-			bl_temp = 0x01;
-			break;
+		bl_temp = 0x01;
+		break;
 	}
 	
 }
@@ -132,13 +133,13 @@ enum Concur{concur_start} concur;
 void Concur_tick(){
 	switch(concur){//transitions
 		case concur_start:
-			concur = concur_start;
-			break;
+		concur = concur_start;
+		break;
 	}
 	switch(concur){//actions
 		case concur_start:
-			PORTB = tl_temp | bl_temp;
-			break;
+		PORTB = tl_temp | bl_temp;
+		break;
 	}
 }
 int main(void)
@@ -157,4 +158,4 @@ int main(void)
 			TimerFlag = 0;
 		}
 	}
-} 
+}

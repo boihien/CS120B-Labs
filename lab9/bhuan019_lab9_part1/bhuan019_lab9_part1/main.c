@@ -52,61 +52,61 @@ void tick(){
 	unsigned char temp = ~PINA & 0x07;
 	switch(state){//transitions
 		case off:
-			if(temp == 0x01){
-				state = button1;
-			}
-			else if(temp == 0x02){
-				state = button2;
-			}
-			else if(temp == 0x04){
-				state = button3;
-			}
-			else{
-				state = off;
-			}
-			break;
+		if(temp == 0x01){
+			state = button1;
+		}
+		else if(temp == 0x02){
+			state = button2;
+		}
+		else if(temp == 0x04){
+			state = button3;
+		}
+		else{
+			state = off;
+		}
+		break;
 		case button1:
-			if(temp == 0x01){
-				state = button1;
-			}
-			else{
-				state = off;
-			}
-			break;
+		if(temp == 0x01){
+			state = button1;
+		}
+		else{
+			state = off;
+		}
+		break;
 		case button2:
-			if(temp == 0x02){
-				state = button2;
-			}
-			else{
-				state = off;
-			}
-			break;
+		if(temp == 0x02){
+			state = button2;
+		}
+		else{
+			state = off;
+		}
+		break;
 		case button3:
-			if(temp == 0x04){
-				state = button3;
-			}
-			else{
-				state = off;
-			}
-			break;
+		if(temp == 0x04){
+			state = button3;
+		}
+		else{
+			state = off;
+		}
+		break;
 	}
 	switch(state){//actions
 		case off:
-			PORTB = 0x01;
-			set_PWM(0);
-			break;
+		PORTB = 0x01;
+		set_PWM(0);
+		break;
 		case button1:
-			PORTB = 0x02;
-			set_PWM(261.63);
-			break;
+		PORTB = 0x02;
+		set_PWM(261.63);
+		break;
 		case button2:
-			PORTB = 0x03;
-			set_PWM(293.66);
-			break;
+		PORTB = 0x03;
+		set_PWM(293.66);
+		break;
 		case button3:
 		PORTB = 0x04;
-			set_PWM(329.63);
-			break;
+		set_PWM(329.63);
+		break;
 	}
 }
 int main(void){
