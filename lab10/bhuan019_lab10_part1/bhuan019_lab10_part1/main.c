@@ -127,6 +127,20 @@ void BL_tick(){
 	}
 		
 }
+enum Concur{concur_start} concur;
+	
+void Concur_tick(){
+	switch(concur){//transitions
+		case concur_start:
+			concur = concur_start;
+			break;
+	}
+	switch(concur){//actions
+		case concur_start:
+			PORTB = tl_temp | bl_temp;
+			break;
+	}
+}
 int main(void)
 {
 	DDRB = 0xFF; PORTB = 0x00;
@@ -138,6 +152,7 @@ int main(void)
 	while (1){
 		TL_tick();
 		BL_tick();
+		Concur_tick();
 		while(!TimerFlag){
 			TimerFlag = 0;
 		}
